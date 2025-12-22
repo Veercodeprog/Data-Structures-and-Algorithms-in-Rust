@@ -1,0 +1,16 @@
+# Ignore everything by default
+*
+
+# But keep directories (so Git can traverse to allowed files)
+!**/
+
+# Keep Rust source files anywhere
+!**/*.rs
+
+# Keep this .gitignore file itself
+!.gitignore
+# Ignore files with executable permissions (advanced)
+**/[!.]*
+!**/*.toml
+!**/*.md
+
