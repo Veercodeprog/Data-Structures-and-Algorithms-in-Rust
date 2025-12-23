@@ -1,16 +1,19 @@
 # Ignore everything by default
 *
 
-# But keep directories (so Git can traverse to allowed files)
-!**/
+# But keep directories (so Git can traverse)
+!*/
 
-# Keep Rust source files anywhere
+# Keep Rust source and common text/config files
 !**/*.rs
-
-# Keep this .gitignore file itself
-!.gitignore
-# Ignore files with executable permissions (advanced)
-**/[!.]*
 !**/*.toml
 !**/*.md
+!**/Cargo.lock
+!**/Cargo.toml
+
+# Keep this file
+!.gitignore
+
+# (Optional) Always ignore Rust build output folders explicitly
+**/target/
 
