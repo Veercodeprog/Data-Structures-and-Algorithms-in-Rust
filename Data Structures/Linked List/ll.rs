@@ -149,6 +149,40 @@ impl SinglyLinkedList {
             index += 1;
         }
     }
+    pub fn has_cycle(&self) -> bool {
+        let mut slow = self.head.clone();
+        let mut fast = self.head.clone();
+
+        loop {
+            let Some(s) = slow.clone() else {
+                return false;
+            };
+            let Some(f) = fast.clone() else {
+                return false;
+            };
+
+            // slow moves 1 step
+            let slow_next = s.borrow().next.clone();
+
+            // fast moves 2 steps
+            let fast_next1 = f.borrow().next.clone();
+            let Some(f1) = fast_next1 else {
+                return false;
+            };
+            let fast_next2 = f1.borrow().next.clone();
+
+            slow = slow_next;
+            fast = fast_next2;
+
+            if let (Some(ref s2), Some(ref f2)) = (&slow, &fast) {
+                if Rc::ptr_eq(s2, f2) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
 }
 
 use std::io::{self, BufRead};
@@ -247,7 +281,15 @@ fn main() {
                 ll.update(pos, val);
             }
             8 => ll.display(),
-            9 => break,
+            9 => {
+                if ll.has_cycle() {
+                    println!("Cycle detected!");
+                } else {
+                    println!("No cycle.");
+                }
+            }
+
+            10 => break,
             _ => {
                 println!("Invalid Choice");
             }
