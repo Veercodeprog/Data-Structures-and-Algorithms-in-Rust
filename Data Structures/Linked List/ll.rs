@@ -149,8 +149,42 @@ impl SinglyLinkedList {
             index += 1;
         }
     }
+    pub fn has_cycle(&self) -> bool {
+        let mut slow = self.head.clone();
+        let mut fast = self.head.clone();
+
+        loop {
+            let Some(s) = slow.clone() else {
+                return false;
+            };
+            let Some(f) = fast.clone() else {
+                return false;
+            };
+
+            // slow moves 1 step
+            let slow_next = s.borrow().next.clone();
+
+            // fast moves 2 steps
+            let fast_next1 = f.borrow().next.clone();
+            let Some(f1) = fast_next1 else {
+                return false;
+            };
+            let fast_next2 = f1.borrow().next.clone();
+
+            slow = slow_next;
+            fast = fast_next2;
+
+            if let (Some(ref s2), Some(ref f2)) = (&slow, &fast) {
+                if Rc::ptr_eq(s2, f2) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
 }
-use std::io;
+use std::io::{self, BufRead};
 fn main() {
     let mut ll = SinglyLinkedList::new_empty();
 
@@ -167,19 +201,18 @@ fn main() {
 
         println!("Enter your Choice");
 
-        let mut choice = String::new();
-        io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read choice");
-        let choice: u32 = choice.trim().parse().expect("Invalid input");
+        let mut line = String::new();
+        let stdin = io::stdin();
+        let mut input = stdin.lock();
+
+        input.read_line(&mut line).expect("Failed to read choice");
+        let choice: u32 = line.trim().parse().expect("Invalid input");
         match choice {
             1 => {
                 println!("Enter value to insert at the beginning:");
                 let mut value = String::new();
 
-                io::stdin()
-                    .read_line(&mut value)
-                    .expect("Failed to read value");
+                stdin.read_line(&mut value).expect("Failed to read value");
                 let val: String = value.trim().parse().expect("Invalid input");
                 ll.insert_begin(val);
             }
@@ -254,12 +287,19 @@ fn main() {
                 let pos: u64 = value.trim().parse().expect("Invalid input");
                 ll.update(pos, val);
             }
-            8 => ll.display(),
-            9 => break,
+            8 => {
+                if ll.has_cycle() {
+                    println!("Cycle detected!");
+                } else {
+                    println!("No cycle.");
+                }
+            }
+
+            9 => ll.display(),
+            10 => break,
             _ => {
                 println!("Invalid Choice");
             }
         }
     }
 }
-
